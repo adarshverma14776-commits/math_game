@@ -1,0 +1,494 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Make Your Maths Easy with Programming</title>
+  <!-- CDN libraries -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" integrity="sha512-/V6rP0kq7+0rDN1v8tY0t2qz1k2k0s0QbqI24O7yq0XH5k9Q0rHVnZ9lUQ0sE5c1Z1G1x2y3z4a5b6c7d8==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root{
+      --bg:#0f172a; --card:#0b1220; --text:#e6eef8; --muted:#9fb3d0; --accent:#60a5fa;
+    }
+    [data-theme="light"]{--bg:#f7fafc; --card:#ffffff; --text:#0b1220; --muted:#4b5563; --accent:#2563eb}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial;background:linear-gradient(180deg,var(--bg),#071025);color:var(--text);min-height:100vh}
+    .app{max-width:1100px;margin:32px auto;padding:20px}
+    header{display:flex;justify-content:space-between;align-items:center;gap:12px}
+    header h1{margin:0;font-size:1.4rem}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border-radius:12px;padding:18px;box-shadow:0 6px 20px rgba(2,6,23,0.6)}
+    .row{display:flex;gap:12px}
+    .col{flex:1}
+    #welcome{display:grid;grid-template-columns:1fr 380px;gap:18px;align-items:start}
+    .controls label{display:block;margin-top:10px;font-size:0.9rem;color:var(--muted)}
+    .controls input,.controls select,.controls button{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:var(--text)}
+    .controls button{cursor:pointer;background:linear-gradient(90deg,var(--accent),#7dd3fc);color:#012!important;border:none}
+    nav{display:flex;gap:8px;flex-wrap:wrap}
+    nav button{background:transparent;border:1px solid rgba(255,255,255,0.05);padding:8px 12px;border-radius:10px;color:var(--text);cursor:pointer}
+    .topic-list{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+    .topic-item{display:flex;align-items:center;justify-content:space-between;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.03)}
+    .small{font-size:0.85rem;color:var(--muted)}
+    #workarea{margin-top:18px;display:grid;grid-template-columns:1fr 360px;gap:18px}
+    .scroll{overflow:auto;max-height:70vh;padding-right:8px}
+    .grid{display:grid;gap:4px}
+    .cell{width:44px;height:44px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.02);border-radius:6px;font-weight:600}
+    .sud-grid{grid-template-columns:repeat(9,44px);grid-auto-rows:44px;border:4px solid rgba(255,255,255,0.03);padding:8px}
+    .sud-grid .cell{border:1px solid rgba(255,255,255,0.02)}
+    .thick{border-width:2px}
+    footer{margin-top:18px;display:flex;justify-content:space-between;align-items:center}
+    @media (max-width:900px){#welcome{grid-template-columns:1fr}#workarea{grid-template-columns:1fr}}
+  </style>
+</head>
+<body data-theme="dark">
+  <div class="app">
+    <header class="row">
+      <div>
+        <h1>Make Your Maths Easy with Programming</h1>
+        <p class="small">RSBVP 2025 — Mathematical Modeling through Computer Programs</p>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <label class="small">Theme</label>
+        <button id="themeToggle" class="card">Toggle Dark/Light</button>
+      </div>
+    </header>
+    <main id="page" class="card">
+      <!-- Page 1: Welcome / name input -->
+      <section id="page1">
+        <div id="welcome">
+          <div class="col card">
+            <h2>Welcome — tell us your name</h2>
+            <div class="controls">
+              <label>Name</label>
+              <input id="userName" placeholder="Your name" />
+              <label>Choose a topic</label>
+              <select id="topicSelect">
+                <option value="magic">Magic Squares</option>
+                <option value="sudoku">Sudoku</option>
+                <option value="kenken">KenKen</option>
+                <option value="geom">Geometric Puzzles</option>
+                <option value="seq">Number Sequences</option>
+                <option value="graph">Graph Theory</option>
+                <option value="games">Nim & Games</option>
+                <option value="fractals">Fractals</option>
+              </select>
+              <label>Animations</label>
+              <div style="display:flex;gap:8px"><button id="animOn">On</button><button id="animOff">Off</button></div>
+              <label style="margin-top:12px">Browser-ready</label>
+              <small class="small">Works on modern Chrome, Edge, Firefox, Safari.</small>
+              <div style="margin-top:12px">
+                <button id="enterApp">Enter</button>
+              </div>
+            </div>
+          </div>
+          <div class="col card">
+            <h3>Quick Tour</h3>
+            <p class="small">After entering your name and topic you'll get:<br>- A clear definition & history<br>- Randomized examples you can request (unique, not repeated)<br>- Interactive solvers: magic squares, Sudoku generator/solver, KenKen hints<br>- Graphs, calculators and downloadable PDF reports</p>
+            <hr />
+            <h4>Tips</h4>
+            <ul class="small">
+              <li>Pick a topic, then enter how many examples you want (≥1)</li>
+              <li>Use the "Download PDF" button to export the current solved examples</li>
+              <li>Toggle theme for easier printing</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- Page 2: Workspace -->
+      <section id="page2" style="display:none">
+        <div class="row">
+          <div class="col card">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div>
+                <h2 id="greeting"></h2>
+                <div class="small" id="topicSubtitle"></div>
+              </div>
+              <div style="display:flex;gap:8px;align-items:center">
+                <button id="backBtn">Back</button>
+                <button id="downloadPdf">Download PDF</button>
+              </div>
+            </div>
+            <hr />
+            <div id="definition" class="scroll"></div>
+            <div style="margin-top:12px">
+              <label class="small">How many examples would you like? (Enter a number)</label>
+              <input id="exampleCount" type="number" min="1" value="3" style="width:100px" />
+              <div style="margin-top:8px">
+                <button id="genExamples">Generate Examples</button>
+                <button id="solveExamples">Show Solutions</button>
+              </div>
+            </div>
+            <div id="examplesArea" style="margin-top:12px"></div>
+          </div>
+          <aside class="card" style="min-width:320px">
+            <h3>Tools</h3>
+            <div class="small">Calculator</div>
+            <input id="calcInput" placeholder="Enter expression, e.g. 3*(4+2)" />
+            <div style="display:flex;gap:8px;margin-top:8px"><button id="calcEval">Evaluate</button><button id="clearCalc">Clear</button></div>
+            <div id="calcOut" class="small" style="margin-top:8px"></div>
+            <hr />
+            <h3>Graphs & Visuals</h3>
+            <canvas id="chart" width="300" height="200"></canvas>
+            <div style="margin-top:8px"><button id="showSequenceGraph">Plot Sequence</button></div>
+            <hr />
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <button id="generateSudoku">Generate Sudoku</button>
+              <button id="openMagic">Open Magic Square Tool</button>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <!-- Hidden puzzle modals -->
+      <div id="modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);align-items:center;justify-content:center;z-index:40">
+        <div id="modalCard" class="card" style="width:760px;max-width:95%;padding:16px;">
+          <div style="display:flex;justify-content:space-between;align-items:center"><h3 id="modalTitle"></h3><button id="closeModal">Close</button></div>
+          <div id="modalBody" style="margin-top:8px"></div>
+        </div>
+      </div>
+    </main>
+    <footer class="small card">
+      <div>Made for RSBVP 2025 • Interactive Maths App</div>
+      <div>Features: animations, dark/light, Sudoku generator, PDF export, charts</div>
+    </footer>
+  </div>
+
+  <script>
+    // --- App state ---
+    const state = {anim:true, examplesHistory:{}}
+
+    const topics = {
+      magic:{title:'Magic Squares', key:'magic', def:'A magic square is a square grid where numbers are placed so each row, column and diagonal add up to the same magic constant. Historically, magic squares appear in Chinese and Indian mathematics; the Lo Shu (3x3) from China is one of the earliest examples. Methods exist for odd-order (Siamese method), doubly-even and singly-even sizes.', examples:[
+        {q:'Create a 3×3 magic square using numbers 1..9', solve:()=>generateOddMagic(3)},
+        {q:'Create a 4×4 magic square using 1..16 (doubly-even)', solve:()=>generateDoublyEven(4)},
+        {q:'Check whether [[8,1,6],[3,5,7],[4,9,2]] is magic', solve:()=>checkMagic([[8,1,6],[3,5,7],[4,9,2]])}
+      ]},
+      sudoku:{title:'Sudoku', key:'sudoku', def:'Sudoku is a 9×9 grid organization puzzle where each row, column and each 3×3 box must contain numbers 1 through 9 exactly once. Modern Sudoku rose to popularity in the late 20th century, though its roots trace to Latin squares studied by Euler.', examples:[
+        {q:'Generate a 9×9 Sudoku puzzle with a unique solution', solve:()=>generateSudokuPuzzle()},
+        {q:'Solve the Sudoku: easy example', solve:()=>solveSampleSudoku()},
+        {q:'Explain the single-candidate (naked single) technique', solve:()=>({explain:'If a cell can only contain one possible number given constraints, place it.'})}
+      ]},
+      kenken:{title:'KenKen', key:'kenken', def:'KenKen is a grid puzzle combining arithmetic and Latin-square-style constraints. Cages with a target and operation must be satisfied; numbers can\'t repeat in rows or columns. It was introduced by Tetsuya Miyamoto in Japan and popularized worldwide as a math-learning tool.', examples:[
+        {q:'Simple 4×4 KenKen with cages', solve:()=>sampleKenKen()},
+        {q:'Explain a strategy for subtraction/division cages', solve:()=>({explain:'Work with orderings — subtraction/division cages of size 2 have limited pairs.'})},
+        {q:'Check a filled 3×3 KenKen for validity', solve:()=>({explain:'Verify cage arithmetic and row/column uniqueness.'})}
+      ]},
+      geom:{title:'Geometric Puzzles', key:'geom', def:'Geometric puzzles like Tangrams involve arranging polygonal pieces to form shapes. Tangram originated in China; classical dissection puzzles (like Dudeney\'s Haberdasher) show elegant equidecompositions.', examples:[
+        {q:'Show a tangram silhouette for a swan', solve:()=>({draw:'tangram-swan'})},
+        {q:'Explain the Missing Square paradox', solve:()=>({explain:'Subtle slope differences cause apparent area change.'})},
+        {q:'Give an arrangement for a simple house using all 7 tans', solve:()=>({explain:'Two large triangles form roof, square for body, others as details'})}
+      ]},
+      seq:{title:'Number Sequences', key:'seq', def:'Number sequences include arithmetic, geometric, Fibonacci, primes and more. They appear in many contexts — finance, nature, algorithms. Recognizing patterns (differences, ratios, recurrence) helps model and predict sequences.', examples:[
+        {q:'Generate first 12 Fibonacci numbers', solve:()=>fib(12)},
+        {q:'Show first 12 primes', solve:()=>primes(12)},
+        {q:'Plot arithmetic sequence with a=2,d=3', solve:()=>({seq:arithmetic(12,2,3)})}
+      ]},
+      graph:{title:'Graph Theory', key:'graph', def:'Graph theory studies nodes and edges. Famous problems include the Bridges of Königsberg and the Traveling Salesman Problem. Applications range from networking to social graphs.', examples:[
+        {q:'Model a small road network and find shortest path (Dijkstra)', solve:()=>({demo:'dijkstra'})},
+        {q:'Explain Eulerian vs Hamiltonian', solve:()=>({explain:'Eulerian uses all edges once; Hamiltonian uses all vertices once.'})},
+        {q:'Find influencers using degree centrality in a sample graph', solve:()=>({demo:'centrality'})}
+      ]},
+      games:{title:'Nim & Other Games', key:'games', def:'Combinatorial games like Nim have complete mathematical analyses. Nim\'s winning strategy is based on binary XOR (nim-sum). Variants include misère Nim and subtraction games.', examples:[
+        {q:'Compute winning move for Nim heaps [3,4,5]', solve:()=>nimAdvice([3,4,5])},
+        {q:'Explain misère Nim differences', solve:()=>({explain:'Endgame parity changes who wants to take last.'})},
+        {q:'Simulate simple 21 Game strategy', solve:()=>({explain:'Aim to force opponent into multiples of (max+1).'})}
+      ]},
+      fractals:{title:'Fractals & Self-Similarity', key:'fractals', def:'Fractals show self-similarity and often arise from simple recurrences — e.g., the Mandelbrot and Julia sets, or natural forms like ferns. They\'re used in modelling coastlines, diffusion, and textures.', examples:[
+        {q:'Show iterative construction of a Koch curve', solve:()=>({draw:'koch'})},
+        {q:'Explain fractal dimension', solve:()=>({explain:'Not necessarily integer; measures complexity scaling with resolution.'})},
+        {q:'Generate simple tree fractal', solve:()=>({draw:'tree'})}
+      ]}
+    }
+
+    // Utility: unique random pick
+    function pickUnique(arr,count){
+      const copy = arr.slice();
+      const out = [];
+      count = Math.max(1,Math.min(count,arr.length));
+      while(out.length < count){
+        const i = Math.floor(Math.random()*copy.length);
+        out.push(copy.splice(i,1)[0]);
+      }
+      return out;
+    }
+
+    // --- event wiring ---
+    document.getElementById('themeToggle').onclick = ()=>{
+      const el = document.body;
+      el.setAttribute('data-theme', el.getAttribute('data-theme')==='light' ? 'dark' : 'light');
+    }
+    document.getElementById('animOff').onclick = ()=>state.anim=false;
+    document.getElementById('animOn').onclick = ()=>state.anim=true;
+
+    document.getElementById('enterApp').onclick = ()=>{
+      const name = document.getElementById('userName').value.trim() || 'Student';
+      const topic = document.getElementById('topicSelect').value;
+      enterWorkspace(name,topic);
+    }
+
+    document.getElementById('backBtn').onclick = ()=>{document.getElementById('page1').style.display='block';document.getElementById('page2').style.display='none';}
+
+    document.getElementById('genExamples').onclick = async ()=>{
+      const count = parseInt(document.getElementById('exampleCount').value)||3;
+      await generateExamples(count);
+    }
+    document.getElementById('solveExamples').onclick = ()=>{showSolutions();}
+
+    document.getElementById('downloadPdf').onclick = ()=>downloadPDF();
+
+    document.getElementById('calcEval').onclick = ()=>{
+      const expr = document.getElementById('calcInput').value;
+      try{ const val = eval(expr); document.getElementById('calcOut').innerText = 'Result: '+String(val); }catch(e){document.getElementById('calcOut').innerText='Error';}
+    }
+    document.getElementById('clearCalc').onclick = ()=>{document.getElementById('calcInput').value='';document.getElementById('calcOut').innerText='';}
+
+    document.getElementById('showSequenceGraph').onclick = ()=>plotSequence();
+    document.getElementById('generateSudoku').onclick = ()=>openSudokuModal();
+    document.getElementById('openMagic').onclick = ()=>openMagicModal();
+
+    document.getElementById('closeModal').onclick = ()=>{document.getElementById('modal').style.display='none';}
+
+    // Enter workspace
+    function enterWorkspace(name,topicKey){
+      const t = topics[topicKey];
+      document.getElementById('page1').style.display='none';
+      document.getElementById('page2').style.display='block';
+      document.getElementById('greeting').innerText = `Hello, ${name}!`;
+      document.getElementById('topicSubtitle').innerText = t.title;
+      document.getElementById('definition').innerHTML = `<h3>Definition & History</h3><p>${t.def}</p><p class='small'>Topic: ${t.title}</p>`;
+      state.currentTopic = topicKey;
+      state.userName = name;
+      state.examplesHistory[topicKey] = state.examplesHistory[topicKey] || [];
+      document.getElementById('examplesArea').innerHTML = '';
+    }
+
+    // Generate examples
+    async function generateExamples(count){
+      const t = topics[state.currentTopic];
+      if(!t) return alert('Pick a topic first');
+      const chosen = pickUnique(t.examples,count);
+      const area = document.getElementById('examplesArea');
+      area.innerHTML='';
+      state.latestExamples = [];
+      for(let i=0;i<chosen.length;i++){
+        const ex = chosen[i];
+        const id = 'ex'+i;
+        state.latestExamples.push({q:ex.q,solve:ex.solve});
+        const card = document.createElement('div');card.className='card';card.style.marginBottom='10px';
+        card.innerHTML = `<div style='display:flex;justify-content:space-between'><strong>Example ${i+1}</strong><div class='small'>${t.title}</div></div><p>${ex.q}</p><div><button data-id='${i}' class='showSolve'>Show solution</button></div><div id='sol${i}' style='margin-top:8px'></div>`;
+        area.appendChild(card);
+      }
+      // attach handlers
+      document.querySelectorAll('.showSolve').forEach(btn=>btn.onclick = async ()=>{
+        const i = parseInt(btn.getAttribute('data-id'));
+        const solBox = document.getElementById('sol'+i);
+        solBox.innerHTML = '<em>Computing...</em>';
+        try{
+          const res = await Promise.resolve(state.latestExamples[i].solve());
+          solBox.innerHTML = `<pre style='white-space:pre-wrap'>${typeof res === 'string' ? res : JSON.stringify(res,null,2)}</pre>`;}catch(e){solBox.innerText = 'Could not compute solution.'}
+      });
+    }
+
+    // Show all solutions (for the latest examples)
+    function showSolutions(){
+      if(!state.latestExamples) return;
+      state.latestExamples.forEach((ex,i)=>{
+        const btn = document.querySelector(`button[data-id='${i}']`);
+        if(btn) btn.click();
+      });
+    }
+
+    // --- Simple generators and helpers ---
+    function checkMagic(mat){
+      const n = mat.length; const sums = [];
+      for(let r=0;r<n;r++) sums.push(mat[r].reduce((a,b)=>a+b,0));
+      for(let c=0;c<n;c++){let s=0;for(let r=0;r<n;r++) s+=mat[r][c];sums.push(s)}
+      let d1=0,d2=0;for(let i=0;i<n;i++){d1+=mat[i][i];d2+=mat[i][n-1-i]}sums.push(d1);sums.push(d2);
+      const ok = sums.every(s=>s===sums[0]);
+      return {matrix:mat,magicConstant:sums[0],isMagic:ok};
+    }
+
+    // Siamese method (odd order)
+    function generateOddMagic(n){
+      if(n%2===0) return 'Siamese method only for odd n';
+      const a = Array.from({length:n},()=>Array(n).fill(0));
+      let num=1;let i=0,j=Math.floor(n/2);
+      while(num<=n*n){a[i][j]=num;num++;let ni=(i-1+n)%n;let nj=(j+1)%n;if(a[ni][nj]){i=(i+1)%n;}else{i=ni;j=nj;}}
+      return checkMagic(a);
+    }
+
+    // Doubly-even 4k algorithm (works for 4)
+    function generateDoublyEven(n){
+      if(n%4!==0) return 'Doubly-even algorithm needs n divisible by 4';
+      const a=[];let num=1;for(let i=0;i<n;i++){a[i]=[];for(let j=0;j<n;j++){a[i][j]=num++;}}
+      for(let i=0;i<n;i++) for(let j=0;j<n;j++){
+        if(((i%4===0||i%4===3)&&(j%4===0||j%4===3))||((i%4===1||i%4===2)&&(j%4===1||j%4===2))){ a[i][j] = n*n - (i*n + j); }
+      }
+      return checkMagic(a);
+    }
+
+    // --- Sudoku: simple generator & solver (backtracking) ---
+    function generateSudokuPuzzle(){
+      // generate full board using backtracking then remove cells
+      const board = Array.from({length:9},()=>Array(9).fill(0));
+      function isSafe(r,c,v){
+        for(let i=0;i<9;i++){if(board[r][i]===v||board[i][c]===v) return false}
+        const br = Math.floor(r/3)*3, bc = Math.floor(c/3)*3;
+        for(let i=0;i<3;i++) for(let j=0;j<3;j++) if(board[br+i][bc+j]===v) return false;
+        return true;
+      }
+      function fill(){
+        for(let r=0;r<9;r++) for(let c=0;c<9;c++){
+          if(board[r][c]===0){
+            const nums = [1,2,3,4,5,6,7,8,9].sort(()=>Math.random()-0.5);
+            for(const n of nums){if(isSafe(r,c,n)){board[r][c]=n; if(fill()) return true; board[r][c]=0;}}
+            return false;
+          }
+        }
+        return true;
+      }
+      fill();
+      // Remove some cells for puzzle
+      for(let i=0;i<40;i++){
+        let r = Math.floor(Math.random()*9), c = Math.floor(Math.random()*9);
+        board[r][c]=0;
+      }
+      return board;
+    }
+
+    function solveSampleSudoku(){
+      const puzzle = [
+        [5,3,0,0,7,0,0,0,0],
+        [6,0,0,1,9,5,0,0,0],
+        [0,9,8,0,0,0,0,6,0],
+        [8,0,0,0,6,0,0,0,3],
+        [4,0,0,8,0,3,0,0,1],
+        [7,0,0,0,2,0,0,0,6],
+        [0,6,0,0,0,0,2,8,0],
+        [0,0,0,4,1,9,0,0,5],
+        [0,0,0,0,8,0,0,7,9]
+      ];
+      // Simple backtracking solver
+      function solve(board){
+        for(let r=0;r<9;r++) for(let c=0;c<9;c++){
+          if(board[r][c]===0){
+            for(let n=1;n<=9;n++){
+              if(isSafe(r,c,n,board)){
+                board[r][c]=n;
+                if(solve(board)) return true;
+                board[r][c]=0;
+              }
+            }
+            return false;
+          }
+        }
+        return true;
+      }
+      function isSafe(r,c,v,board){
+        for(let i=0;i<9;i++) if(board[r][i]===v||board[i][c]===v) return false;
+        const br = Math.floor(r/3)*3, bc = Math.floor(c/3)*3;
+        for(let i=0;i<3;i++) for(let j=0;j<3;j++) if(board[br+i][bc+j]===v) return false;
+        return true;
+      }
+      solve(puzzle);
+      return puzzle;
+    }
+
+    // --- KenKen example ---
+    function sampleKenKen(){
+      return {
+        grid: [
+          [1,2,3,4],
+          [2,3,4,1],
+          [3,4,1,2],
+          [4,1,2,3]
+        ],
+        cages: [
+          {cells:[[0,0],[0,1]], op:'+', target:3},
+          {cells:[[1,0],[2,0]], op:'-', target:1},
+          {cells:[[3,3],[3,2]], op:'*', target:6}
+        ]
+      };
+    }
+
+    // --- Number sequences ---
+    function fib(n){
+      let a=0,b=1,res=[a,b];
+      for(let i=2;i<n;i++){let t=b;b+=a;a=t;res.push(b);}
+      return res;
+    }
+    function primes(n){
+      let res=[],i=2;
+      while(res.length<n){
+        let isPrime=true;
+        for(let j=2;j*j<=i;j++) if(i%j===0) isPrime=false;
+        if(isPrime) res.push(i);
+        i++;
+      }
+      return res;
+    }
+    function arithmetic(n,a,d){
+      let res=[];
+      for(let i=0;i<n;i++) res.push(a+i*d);
+      return res;
+    }
+
+    // --- Graph Theory ---
+    function plotSequence(){
+      const seq = arithmetic(12,2,3);
+      const ctx = document.getElementById('chart').getContext('2d');
+      new Chart(ctx, {
+        type: 'line',
+        data: {labels:seq.map((_,i)=>i+1), datasets:[{label:'Sequence', data:seq}]},
+        options: {responsive:true, maintainAspectRatio:false}
+      });
+    }
+
+    // --- Nim ---
+    function nimAdvice(heaps){
+      let nimsum = heaps.reduce((a,b)=>a^b,0);
+      if(nimsum===0) return 'You are in a losing position.';
+      for(let i=0;i<heaps.length;i++){
+        let target = heaps[i]^nimsum;
+        if(target<heaps[i]) return `Take ${heaps[i]-target} from heap ${i+1}.`;
+      }
+      return 'No winning move found.';
+    }
+
+    // --- PDF export ---
+    function downloadPDF(){
+      const {jsPDF} = window.jspdf;
+      const doc = new jsPDF();
+      doc.setFontSize(16);
+      doc.text('Math Game Examples', 10, 10);
+      doc.setFontSize(12);
+      let y = 20;
+      document.querySelectorAll('#examplesArea .card').forEach(card=>{
+        const q = card.querySelector('p').innerText;
+        const sol = card.querySelector('pre')?.innerText || '';
+        doc.text(q, 10, y);
+        y += 10;
+        if(sol){
+          doc.text(sol, 10, y);
+          y += 10;
+        }
+        y += 10;
+      });
+      doc.save('mathgame_examples.pdf');
+    }
+
+    // --- Modal openers ---
+    function openSudokuModal(){
+      document.getElementById('modalTitle').innerText = 'Sudoku Generator';
+      document.getElementById('modalBody').innerHTML = '<p>Click "Generate Sudoku" to create a new puzzle.</p>';
+      document.getElementById('modal').style.display = 'flex';
+    }
+    function openMagicModal(){
+      document.getElementById('modalTitle').innerText = 'Magic Square Tool';
+      document.getElementById('modalBody').innerHTML = '<p>Click "Generate Magic Square" to create a new square.</p>';
+      document.getElementById('modal').style.display = 'flex';
+    }
+  </script>
+</body>
+</html>
